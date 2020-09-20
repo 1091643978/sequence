@@ -1,7 +1,44 @@
 {{#messages}}
 
-    group call third api return {{httpStatus}}
-         o1 -->m2:   {\n  "errors": { \n  "code": " {{code}}", \n "description": "{{description}}" \n  } \n }  \nHTTP Status Code:{{httpStatus}}
-         m2 -->m1:  {"code":"A01103999","description":"call third api exception:{{code}}"}\nHTTP Status Code:500
-    end
+
+    @Test
+    public void thirdApi{{httpStatus}}{{code}}() throws IOException, ServletException {
+
+        String result = "{\"code\":\"{{code}}\",\"description\":\"Call third API error {{httpStatus}} : {{code}}\"}";
+        //given
+        App app = new App();
+        given(response.getWriter()).willReturn(writer);
+        given(request.getHeader("x-api-key")).willReturn("xxxx");
+        given(request.getHeader("token")).willReturn("xxxx");
+        given(request.getParameter("vin")).willReturn("xxxx");
+        given(request.getParameter("userId")).willReturn("xxxx");
+
+        String responseJsonString = "{{description}}";
+
+        String tokenResponse = "{\n" +
+                "\"active\": true,\n" +
+                "\"scope\": \"openid profile email mapping uniid scope1 scope2 scope3\",\n" +
+                "\"client_id\": \"testclient\",\n" +
+                "\"username\": \"testuser\",\n" +
+                "\"exp\": 1325420310319,\n" +
+                "\"sub\": \"a2b4bbc346a845058ff5d5b44ff937cf43a529dca6d44d14ad165a62038cca59\",\n" +
+                "\"iss\": \"https://id.toyota/api/connect/v1\",\n" +
+                "\"token_type\": \"Bearer\"\n" +
+                "}";
+       // server.enqueue(new MockResponse().setResponseCode(200).setBody(tokenResponse));
+        server.enqueue(new MockResponse()
+                .setResponseCode({{httpStatus}}).setBody(responseJsonString));
+
+
+        //when
+        app.initialize(context);
+        app.handleRequest(request, response, context);
+
+
+        //then
+        verify(response).setStatus({{httpStatus}});
+        assertEquals(result, out.toString());
+    }
+
+
 {{/messages}}
