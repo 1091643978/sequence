@@ -51,4 +51,113 @@ public class ExampleTest {
         writer.flush();
 
     }
+
+    @Test
+    public void error_unit_up001() throws IOException {
+        ImportParams params = new ImportParams();
+        params.setHeadRows(1);
+        long start = System.currentTimeMillis();
+        URL resource = ExampleIf03.class.getResource("/up001.xlsx");
+        String file = resource.getFile();
+        List<Message> messages = ExcelImportUtil.importExcel(
+                new File(file), Message.class, params);
+        System.out.println(System.currentTimeMillis() - start);
+        System.out.println(messages.size());
+        System.out.println(ReflectionToStringBuilder.toString(messages.get(0)));
+
+
+        HashMap<String, List<Message>> scopes = new HashMap<String, List<Message>>();
+        scopes.put("messages", messages);
+
+        Writer writer = new OutputStreamWriter(System.out);
+        MustacheFactory mf = new DefaultMustacheFactory();
+        Mustache mustache = mf.compile("error_unit.mustache");
+        mustache.execute(writer, scopes);
+        writer.flush();
+
+
+    }
+
+
+
+    @Test
+    public void error_unit_up002() throws IOException {
+        ImportParams params = new ImportParams();
+        params.setHeadRows(1);
+        long start = System.currentTimeMillis();
+        URL resource = ExampleIf03.class.getResource("/vinfo.xlsx");
+        String file = resource.getFile();
+        List<Message> messages = ExcelImportUtil.importExcel(
+                new File(file), Message.class, params);
+        System.out.println(System.currentTimeMillis() - start);
+        System.out.println(messages.size());
+        System.out.println(ReflectionToStringBuilder.toString(messages.get(0)));
+
+
+        HashMap<String, List<Message>> scopes = new HashMap<String, List<Message>>();
+        scopes.put("messages", messages);
+
+        Writer writer = new OutputStreamWriter(System.out);
+        MustacheFactory mf = new DefaultMustacheFactory();
+        Mustache mustache = mf.compile("error_unit.mustache");
+        mustache.execute(writer, scopes);
+        writer.flush();
+
+
+    }
+
+
+    @Test
+    public void error_unit_up003() throws IOException {
+        ImportParams params = new ImportParams();
+        params.setHeadRows(1);
+        long start = System.currentTimeMillis();
+        URL resource = ExampleIf03.class.getResource("/register_status.xlsx");
+        String file = resource.getFile();
+        List<Message> messages = ExcelImportUtil.importExcel(
+                new File(file), Message.class, params);
+        System.out.println(System.currentTimeMillis() - start);
+        System.out.println(messages.size());
+        System.out.println(ReflectionToStringBuilder.toString(messages.get(0)));
+
+
+        HashMap<String, List<Message>> scopes = new HashMap<String, List<Message>>();
+        scopes.put("messages", messages);
+
+        Writer writer = new OutputStreamWriter(System.out);
+        MustacheFactory mf = new DefaultMustacheFactory();
+        Mustache mustache = mf.compile("error_unit.mustache");
+        mustache.execute(writer, scopes);
+        writer.flush();
+
+
+    }
+
+
+
+    @Test
+    public void error_unit_up005() throws IOException {
+        ImportParams params = new ImportParams();
+        params.setHeadRows(1);
+        long start = System.currentTimeMillis();
+        URL resource = ExampleIf03.class.getResource("/delete.xlsx");
+        String file = resource.getFile();
+        List<Message> messages = ExcelImportUtil.importExcel(
+                new File(file), Message.class, params);
+        System.out.println(System.currentTimeMillis() - start);
+        System.out.println(messages.size());
+        System.out.println(ReflectionToStringBuilder.toString(messages.get(0)));
+
+
+        HashMap<String, List<Message>> scopes = new HashMap<String, List<Message>>();
+        scopes.put("messages", messages);
+
+        Writer writer = new OutputStreamWriter(System.out);
+        MustacheFactory mf = new DefaultMustacheFactory();
+        Mustache mustache = mf.compile("error_unit.mustache");
+        mustache.execute(writer, scopes);
+        writer.flush();
+
+
+    }
 }

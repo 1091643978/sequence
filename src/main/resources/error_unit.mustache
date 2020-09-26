@@ -1,0 +1,47 @@
+{{#messages}}
+
+
+    @Test
+    public void thirdApi{{httpStatus}}{{code}}()  {
+
+
+        String result = "{\"code\":\"A01105999\",\"description\":\"{{code}} : {{description}}\",\"data\":\"\"}";
+        //given
+        App app = new App();
+        headerMap.put("x-api-key", "xxx");
+        headerMap.put("token", "xxx");
+        queryMap.put("userId", "xxx");
+
+        // String responseJsonString = "DB access error occurred.";
+        String responseJsonString = "{\n" +
+                "    \"errors\": {\n" +
+                "        \"code\": \"{{code}}\",\n" +
+                "        \"description\": \"{{description}}\"\n" +
+                "    }\n" +
+                "}";
+
+
+        String tokenResponse = "{\n" +
+                "\"active\": true,\n" +
+                "\"scope\": \"openid profile email mapping uniid scope1 scope2 scope3\",\n" +
+                "\"client_id\": \"testclient\",\n" +
+                "\"username\": \"testuser\",\n" +
+                "\"exp\": 1325420310319,\n" +
+                "\"sub\": \"a2b4bbc346a845058ff5d5b44ff937cf43a529dca6d44d14ad165a62038cca59\",\n" +
+                "\"iss\": \"https://id.toyota/api/connect/v1\",\n" +
+                "\"token_type\": \"Bearer\"\n" +
+                "}";
+        server.enqueue(new MockResponse().setResponseCode(200).setBody(tokenResponse));
+        server.enqueue(new MockResponse()
+                .setResponseCode({{httpStatus}}).setBody(responseJsonString));
+
+        //when
+        ApiResponse apiResponse = app.handleRequest(request, context);
+
+        //then
+        assertEquals({{httpStatus}}, apiResponse.getStatusCode());
+        assertEquals(result, apiResponse.getBody());
+    }
+
+
+{{/messages}}
