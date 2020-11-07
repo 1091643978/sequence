@@ -11,6 +11,7 @@
         headerMap.put("x-api-key", "xxx");
         headerMap.put("token", "xxx");
         queryMap.put("userId", "xxx");
+        queryMap.put("vin", "xxx");
 
         // String responseJsonString = "DB access error occurred.";
         String responseJsonString = "{\n" +
@@ -39,7 +40,7 @@
         ApiResponse apiResponse = app.handleRequest(request, context);
 
         //then
-        assertEquals({{httpStatus}}, apiResponse.getStatusCode());
+        assertEquals(500, apiResponse.getStatusCode());
         assertEquals(result, apiResponse.getBody());
     }
 
