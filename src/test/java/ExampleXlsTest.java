@@ -174,4 +174,32 @@ public class ExampleXlsTest {
 
 
     }
+
+    @Test
+    public void error_unit_up008() throws IOException {
+        ImportParams params = new ImportParams();
+        params.setHeadRows(1);
+        long start = System.currentTimeMillis();
+        URL resource = ExampleIf03.class.getResource("/msg08.xlsx");
+        String file = resource.getFile();
+        List<Message> messages = ExcelImportUtil.importExcel(
+                new File(file), Message.class, params);
+        System.out.println(System.currentTimeMillis() - start);
+        System.out.println(messages.size());
+        System.out.println(ReflectionToStringBuilder.toString(messages.get(0)));
+
+
+        HashMap<String, List<Message>> scopes = new HashMap<String, List<Message>>();
+        scopes.put("messages", messages);
+
+        Writer writer = new OutputStreamWriter(System.out);
+        MustacheFactory mf = new DefaultMustacheFactory();
+//        Mustache mustache = mf.compile("error_unit.mustache");
+        Mustache mustache = mf.compile("msg08.mustache");
+        mustache.execute(writer, scopes);
+        writer.flush();
+
+
+    }
+
 }
