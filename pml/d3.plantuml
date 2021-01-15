@@ -1,0 +1,28 @@
+@startuml
+    hide unlinked
+
+    autonumber
+commercial_customer -> mobile_app
+
+commercial_customer -> mobile_app ++
+
+commercial_customer -> mobile_app ++ : Select service
+return response
+return response
+
+dsp_identity -> dsp_identity : Validate credentials
+
+
+svc_dispatch_agreement -\ otb_commercial_customer : Request consent
+par
+  svc_dispatch_agreement -> svc_dispatch_agreement : Immediate reply
+end
+
+
+alt condition 1
+else condition 2
+else condition 3
+end
+
+
+@enduml

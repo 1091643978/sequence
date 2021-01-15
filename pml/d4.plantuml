@@ -1,0 +1,24 @@
+@startuml
+    hide unlinked
+
+rectangle "Customer Domain" {
+    entity "Customer" as c01 {
+        * Identifying attributes
+        customerId <<auto generated>> integer
+        --
+        * Mandatory attributes
+        firstName : varchar(255)
+        birthDate : date
+        --
+        * Optional attributes
+        middleNames : varchar(255)
+     }
+
+}
+
+
+
+c01 ||-right-|{ c02
+c02 }|-right-|| c03
+
+@enduml

@@ -1,2 +1,22 @@
 # sequence
 template examples about mustache freemarker velocity
+
+{% plantuml %}
+
+@startuml
+
+participant "ContentManager class" as ContentManager
+participant "app: Application" as app
+participant "cm: ContentManager" as cm
+
+app->ContentManager: getInstance(context)
+ContentManager->app: cm
+app->cm: addDownloadStateListener(this)
+app->cm: start()
+
+...
+
+app->cm: stop()
+
+@enduml
+{% endplantuml %}

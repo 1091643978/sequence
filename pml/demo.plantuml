@@ -1,0 +1,16 @@
+@startuml
+skinparam linestyle ortho
+rectangle "A" as one
+rectangle "B" as two
+rectangle "C" as three
+rectangle "D" as four
+
+one -right-> two: message 1-->2
+two -right-> three: message 2-->3
+two --> four: message 2-->4
+three -[hidden]- four
+@enduml
+
+'Is there a way to create an UML Communication diagram?
+'I am glad to hear. For more details you may also look here: http://plantuml.com/archimate-diagram.
+'Example: https://en.wikipedia.org/wiki/Communication_diagram

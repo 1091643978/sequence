@@ -1,0 +1,466 @@
+'https://real-world-plantuml.com/
+
+@startuml
+title Wykonywanie pomiarów
+autonumber
+
+box "Monitor" #DarkSalmon
+	database monitorDB
+	control monitor
+end box
+entity checker
+box "Kontroler" #LightBlue
+	control kontroler
+end box
+
+loop dla wszystkich service'ów sprawdzanych w danej chwili
+	monitor -> checker: wykonaj
+	activate checker
+	checker --> monitor: zwraca WARTOŒÆ
+	deactivate checker
+	monitor -> monitorDB: dodaj pomiar do bazy
+	alt jeœli WARTOŒÆ jest WARNING, CRITICAL, UNKNOW
+		monitor -> kontroler: POST /problem
+		kontroler -> monitor: pe³na synchronizacja
+	end
+end
+@enduml
+
+@startuml
+	participant terminal
+
+	box "Crédit Chaton" #99CCFF
+		participant acquisition as acqChaton
+		participant autorisation as authChaton
+	end box
+
+	participant interbancaire
+
+	box "Bénépé" #FFCC99
+		participant acquisition as acqBé
+		participant autorisation as authBé
+	end box
+
+	terminal -> acqChaton : demande
+	acqChaton -> interbancaire :demande
+	interbancaire -> acqBé : demande
+	acqBé -> authBé : demande
+	authBé --> acqBé : réponse
+	acqBé --> interbancaire : réponse
+	interbancaire --> acqChaton : réponse
+	acqChaton --> terminal : réponse
+@enduml
+
+
+@startuml
+hide footbox
+
+box "Source Endpoint"
+    participant "Flow Control" as FC
+    participant "Data Service" as DS
+end box
+
+box "Sink Endpoint"
+    participant "Data Client" as DC
+    participant "Remote Flow Control" as RFC
+end box
+
+activate FC
+activate RFC
+activate DS
+
+DC <- RFC : start
+activate DC
+
+DS <- DC : connect
+
+DC -> RFC : request registration
+FC <- RFC : {RegistrationRequest}
+
+FC -> DS : call for synchronisation
+activate DS
+DS -> DC : {Sychronisation}
+
+FC --> RFC : {RegistrationRequestAcknowledgement}
+DC <- RFC : registration requested
+
+...
+
+DC --> RFC : confirm synchronisation
+FC <- RFC : {RegistrationSuccess}
+
+DS -> DC : {Sychronisation}
+FC -> DS : stop synchronisation
+deactivate DS
+
+FC --> RFC : {RegistrationSuccessAcknowledgement}
+@enduml
+
+
+@startuml
+
+actor Administrator
+
+== Create some Audit settings ==
+
+Administrator -> Watcher : create new Audit Template (i.e. Audit settings : goal, scope, ...)
+Watcher -> Watcher : save Audit Template in database
+Administrator <-- Watcher : Audit Template UUID
+
+== Launch a new Audit ==
+
+Administrator -> Watcher : launch new Audit of the Openstack infrastructure resources\nwith a previously created Audit Template
+Administrator <-- Watcher : Audit UUID
+Administrator -> Watcher : get the Audit state
+Administrator <-- Watcher : ONGOING
+Watcher -> Watcher : compute a solution to achieve optimization goal
+Administrator -> Watcher : get the Audit state
+Administrator <-- Watcher : SUCCEEDED
+
+== Get the result of the Audit ==
+
+Administrator -> Watcher : get Action Plan
+Administrator <-- Watcher : recommended Action Plan and estimated efficacy
+Administrator -> Administrator : verify the recommended actions\nand evaluate the estimated gain vs aggressiveness of the solution
+
+== Launch the recommended Action Plan ==
+
+Administrator -> Watcher : launch the Action Plan
+Administrator <-- Watcher : Action Plan has been launched
+Watcher -> Watcher : trigger Actions on Openstack services
+Administrator -> Watcher : get the Action Plan state
+Administrator <-- Watcher : ONGOING
+Administrator -> Watcher : get the Action Plan state
+Administrator <-- Watcher : SUCCEEDED
+
+@enduml
+
+
+@startuml
+hide footbox
+actor User
+activate User
+note left of User
+编写测试用例
+end note
+
+User --> RF: Run
+deactivate User
+activate RF
+note left of RF
+1、将RetrieveData
+     翻译为测试脚本
+2、将Check记录为
+     CheckList
+end note
+
+RF --> PSTT: SendScript
+deactivate RF
+
+PSTT --> RF: ScriptRecieved
+RF --> PSTT: Start
+PSTT --> RF: Started
+activate PSTT
+note right of PSTT
+1、加载所有的获取数据的规则与方法
+2、开始执行脚本
+3、执行过程中，按照获取数据的规则
+     与方法保存数据
+4、汇总获取到的数据，形成测试报告
+5、获取数据的规则与方法在PSTT中
+     定义，RF可以按照方法名称调用
+end note
+
+PSTT --> RF: Report
+deactivate PSTT
+activate RF
+note left of RF
+1、记录各个PSTT的
+     测试报告
+2、按照CheckList
+     中的检查规则，检查
+     测试是否每个Check
+     项目是否为True
+3、所有检查项为True则
+     测试通过
+end note
+
+RF --> User: Test Result(Pass/Fail/Error)
+deactivate RF
+
+@enduml
+
+
+@startuml
+
+skinparam state {
+    FontColor          white
+    AttributeFontColor white
+    FontSize           17
+    AttributeFontSize  15
+    AttributeFontname  Droid Sans Mono
+    BackgroundColor    #527BC6
+    BorderColor        black
+    ArrowColor         #222266
+}
+
+[*] -right-> PENDING
+PENDING -right-> STARTED
+STARTED -down-> PROGRESS
+PROGRESS -right-> FAILURE
+PROGRESS -down-> REVOKED : <b> Revoked</b>\nby user
+PROGRESS -left-> SUCCESS
+FAILURE --> [*]
+REVOKED --> [*]
+SUCCESS --> [*]
+
+PENDING : <b>statistic attribute</b>
+PENDING : add_date  2013-01-06 05:01
+PENDING : <b>task state metadata</b>
+
+STARTED : <b>statistic attribute</b>
+STARTED : add_date  2013-01-06 05:01
+STARTED : <b>task state metadata</b>
+STARTED : pid       <i>of worker</i>
+STARTED : hostname  <i>of worker</i>
+
+PROGRESS : <b>statistic attribute</b>
+PROGRESS : add_date        2013-01-06 05:01
+PROGRESS : <b>task state metadata</b>
+PROGRESS : start_date      2013-01-06 05:02
+PROGRESS : elapsed_time    00:15:18
+PROGRESS : eta_time        00:03:12
+PROGRESS : media_size      23729373055
+PROGRESS : publish_size    18874368000
+PROGRESS : percent         80
+
+SUCCESS : <b>statistic attribute</b>
+SUCCESS : add_date      2013-01-06 05:01
+SUCCESS : <b>task state metadata</b>
+SUCCESS : result {
+SUCCESS : start_date    2013-01-06 05:02
+SUCCESS : elapsed_time  00:18:30
+SUCCESS : eta_time      <b>00:00:00</b>
+SUCCESS : media_size    23729373055
+SUCCESS : publish_size  23729373055
+SUCCESS : percent       <b>100</b>
+SUCCESS : hostname      publisher-0
+SUCCESS : pid           18307
+SUCCESS : }
+
+RETRY : <b>statistic attribute</b>
+RETRY : add_date   2013-01-06 05:01
+RETRY : <b>task state metadata</b>
+RETRY : result     <i>exception</i>
+RETRY : traceback  <i>stack trace</i>
+
+FAILURE : <b>statistic attribute</b>
+FAILURE : add_date   2013-01-06 05:01
+FAILURE : error         (=result)
+FAILURE : error_details (...)
+FAILURE : <b>task state metadata</b>
+FAILURE : result     <i>exception</i>
+FAILURE : traceback  <i>stack trace</i>
+
+REVOKED : <b>statistic attribute</b>
+REVOKED : add_date  2013-01-06 05:01
+REVOKED : <b>task state metadata</b>
+
+@enduml
+
+
+@startuml
+
+actor user
+
+box "h2o-zookeeper.jar"
+    participant water.zookeeper.h2odriver as driver
+end box
+
+box "h2o-zookeeper.jar (1)"
+    participant "water.zookeeper.h2oworker (1)" as worker1
+    participant "water.H2O (1)" as h2o1
+end box
+
+box "h2o-zookeeper.jar (2)"
+    participant "water.zookeeper.h2oworker (2)" as worker2
+    participant "water.H2O (2)" as h2o2
+end box
+
+box "zookeeper.jar"
+    database zookeeper
+end box
+
+
+
+autonumber
+
+
+
+== User starts a new H2O cloud ==
+
+user -> driver : User starts driver process
+activate driver
+note left
+  User specifies zkConnectionString: a.b.c.d:e
+  User specifies zkRoot: /zk/path/h2o-uuid
+  User specifies numNodes: 2
+
+  java -jar h2o-zookeeper.jar water.zookeeper.h2odriver
+      -zk a.b.c.d:e
+      -zkroot "/zk/path/h2o-uuid"
+      -nodes 2
+      -start
+end note
+
+== Establish root ZNode for this cloud ==
+
+driver -> zookeeper : Driver creates zkRoot
+note left
+  create("/zk/path/h2o-uuid", (PERSISTENT))
+  ZNode data: { "numNodes" : 2 }
+
+  User is responsible for providing
+  a unique cloud name (h2o-uuid).
+end note
+
+driver <- zookeeper : OK
+
+driver -> zookeeper : Driver creates zkRoot/nodes
+note left
+  create("/zk/path/h2o-uuid/nodes", (PERSISTENT))
+end note
+
+driver <- zookeeper : OK
+
+user <- driver : OK
+deactivate driver
+
+== Start workers ==
+
+user -> worker1 : Start H2O node 1
+activate worker1
+note left
+  java -jar h2o-zookeeper.jar water.zookeeper.h2oworker
+      -zk a.b.c.d:e
+      -zkroot "/zk/path/h2o-uuid"
+      -nodes 2
+      [plus other H2O options]
+end note
+worker1 -> h2o1 : Start H2O node 1
+activate h2o1
+worker1 <- h2o1 : H2O node 1 port chosen
+worker1 -> zookeeper : Worker creates ZNode
+note left
+  create("/zk/path/h2o-uuid/nodes/", (PERSISTENT, SEQUENCE))
+  ZNode data: { "ip" : "n1a.n1b.n1c.n1d", "port" : n1e, "pid" : pid1 }
+end note
+worker1 <- zookeeper : OK
+
+user -> worker2 : Start H2O node 2
+activate worker2
+note left
+  java -jar h2o-zookeeper.jar water.zookeeper.h2oworker
+      -zk a.b.c.d:e
+      -zkroot "/zk/path/h2o-uuid"
+      -nodes 2
+      [plus other H2O options]
+end note
+worker2 -> h2o2 : Start H2O node 2
+activate h2o2
+worker2 <- h2o2 : H2O node 2 port chosen
+worker2 -> zookeeper : Worker creates ZNode
+note left
+  create("/zk/path/h2o-uuid/nodes/", (PERSISTENT, SEQUENCE))
+  ZNode data: { "ip" : "n2a.n2b.n2c.n2d", "port" : n2e, "pid" : pid2 }
+end note
+worker2 <- zookeeper : OK
+
+== Poll for nodes started ==
+
+worker1 -> zookeeper : Poll for all nodes started
+note left
+  getChildren("/zk/path/h2o-uuid/nodes")
+end note
+worker1 <- zookeeper : OK
+note right
+  "/zk/path/h2o-uuid/nodes/1"
+      { "ip" : "n1a.n1b.n1c.n1d", "port" : n1e, "pid" : pid1 }
+
+  "/zk/path/h2o-uuid/nodes/2"
+      { "ip" : "n2a.n2b.n2c.n2d", "port" : n2e, "pid" : pid2 }
+end note
+
+worker2 -> zookeeper : Poll for all nodes started
+note left
+  getChildren("/zk/path/h2o-uuid/nodes")
+end note
+worker2 <- zookeeper : OK
+note right
+  (Same as above)
+end note
+
+== H2O nodes request flatfile from workers ==
+
+worker1 <- h2o1 : Request flatfile
+worker1 <- h2o1 : Worker provides flatfile to H2O
+
+worker2 <- h2o2 : Request flatfile
+worker2 -> h2o2 : Worker provides flatfile to H2O
+
+== H2O nodes find each other and notify workers ==
+
+h2o1 -> h2o2 : H2O nodes form a cloud
+h2o2 -> h2o1 : H2O nodes form a cloud
+
+worker1 <- h2o1 : cloud size 2
+worker2 <- h2o2 : cloud size 2
+
+== Workers create a master (sentinal) ZNode (only one create succeeds) ==
+
+worker1 -> zookeeper : Create cloud ready ZNode
+note left
+  create("/zk/path/h2o-uuid/master", (PERSISTENT))
+  ZNode data: { "ip" : "n1a.n1b.n1c.n1d", "port" : n1e, "pid" : pid1 }
+end note
+worker1 <- zookeeper : OK
+deactivate worker1
+
+worker2 -> zookeeper : Create master ZNode (cloud ready)
+note left
+  create("/zk/path/h2o-uuid/master", (PERSISTENT))
+  ZNode data: { "ip" : "n2a.n2b.n2c.n2d", "port" : n2e, "pid" : pid2 }
+end note
+worker2 <- zookeeper : KeeperException.NodeExists
+note right
+  This is OK, exactly one node wins the race
+end note
+deactivate worker2
+
+== User polls for cloud up ==
+
+user -> driver : User polls for cloud up
+activate driver
+note left
+  java -jar h2o-zookeeper.jar water.zookeeper.h2odriver
+      -zk a.b.c.d:e
+      -zkroot "/zk/path/h2o-uuid"
+      -wait
+end note
+driver -> zookeeper : Poll for master node ip and port of the new H2O cloud
+note left
+  getData("/zk/path/h2o-uuid/master")
+end note
+driver <- zookeeper : OK
+note right
+  { "ip" : "n1a.n1b.n1c.n1d", "port" : n1e, "pid" : pid1 }
+end note
+user <- driver: Master node ip, port
+deactivate driver
+
+== User interacts with H2O cloud ==
+
+user -> h2o1 : Point browser to H2O Web UI
+
+
+@enduml

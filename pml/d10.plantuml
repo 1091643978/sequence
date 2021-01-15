@@ -1,0 +1,6 @@
+@startuml
+hide footbox
+[--> Board : create
+create Piece
+Board --> Piece: create
+@enduml

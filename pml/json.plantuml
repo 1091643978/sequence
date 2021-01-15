@@ -1,0 +1,29 @@
+@startjson
+ {
+        "data": {
+            "vehicleRegistrationStatus": {
+                "vin": "JA0000000000",
+                "registeredProfiles": [
+                    {
+                        "userId": "XXXXXXXXXX",
+                        "role": 0,
+                        "memoryId": 1,
+                        "profileName": "NAME_1"
+                    },
+                    {
+                        "userId": "YYYYYYYYYY",
+                        "role": 1,
+                        "memoryId": 2,
+                        "profileName": "NAME_2"
+                    },
+                    {
+                        "userId": "ZZZZZZZZZZ",
+                        "role": 1,
+                        "memoryId": 3,
+                        "profileName": "NAME_3"
+                    }
+                ]
+            }
+        }
+    }
+@endjson
