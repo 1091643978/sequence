@@ -1,12 +1,67 @@
 {{#messages}}
+    @Test
+    public void thirdApi{{httpStatus}}{{code}}() throws IOException, ServletException {
+
+    String result = "{\"code\":\"A01108999\",\"description\":\"Call third API error {{httpStatus}} : {{code}}\"}";
+    //given
+    App app = new App();
+    headerMap.put("x-api-key", "xxx");
+    headerMap.put("token", "xxx");
+
+    queryMap.put("vin", "vin");
+    queryMap.put("userId", "xxx");
 
 
-{
-    "errors": {
-        "code": "{{code}}",
-        "description": "{{description}}"
+    String responseJsonString = "{\n" +
+    "    \"errors\": {\n" +
+    "        \"code\": \"{{code}}\",\n" +
+    "        \"description\": \"{{description}}\"\n" +
+    "    }\n" +
+    "}";
+
+
+    String tokenResponse = "{\n" +
+    "    \"data\": {\n" +
+    "        \"vehicleRegistrationStatus\": {\n" +
+    "            \"vin\": \"JA0000000000\",\n" +
+    "            \"registeredProfiles\": [\n" +
+    "                {\n" +
+    "                    \"userId\": \"XXXXXXXXXX\",\n" +
+    "                    \"role\": 0,\n" +
+    "                    \"memoryId\": 1,\n" +
+    "                    \"profileName\": \"NAME_1\"\n" +
+    "                },\n" +
+    "                {\n" +
+    "                    \"userId\": \"YYYYYYYYYY\",\n" +
+    "                    \"role\": 1,\n" +
+    "                    \"memoryId\": 2,\n" +
+    "                    \"profileName\": \"NAME_2\"\n" +
+    "                },\n" +
+    "                {\n" +
+    "                    \"userId\": \"ZZZZZZZZZZ\",\n" +
+    "                    \"role\": 1,\n" +
+    "                    \"memoryId\": 3,\n" +
+    "                    \"profileName\": \"NAME_3\"\n" +
+    "                }\n" +
+    "            ]\n" +
+    "        }\n" +
+    "    }\n" +
+    "}";
+   server.enqueue(new MockResponse().setResponseCode(200).setBody(tokenResponse));
+    server.enqueue(new MockResponse().setResponseCode({{httpStatus}}).setBody(responseJsonString));
+
+
+
+    //when
+    ApiResponse apiResponse = app.handleRequest(request, context);
+
+    //then
+    assertEquals(500, apiResponse.getStatusCode());
+
+    assertEquals(result, apiResponse.getBody());
+
+
     }
-}
 
 
 {{/messages}}

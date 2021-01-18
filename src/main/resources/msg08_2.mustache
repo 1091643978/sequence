@@ -1,6 +1,9 @@
 {{#messages}}
+
+
+
     @Test
-    public void thirdApi{{httpStatus}}{{code}}() throws IOException, ServletException {
+    public void GetRegistrationStatus_thirdApi{{httpStatus}}{{code}}() throws IOException, ServletException {
 
     String result = "{\"code\":\"A01108999\",\"description\":\"Call third API error {{httpStatus}} : {{code}}\"}";
     //given
@@ -47,7 +50,7 @@
     "        }\n" +
     "    }\n" +
     "}";
-   server.enqueue(new MockResponse().setResponseCode(200).setBody(tokenResponse));
+ //   server.enqueue(new MockResponse().setResponseCode(200).setBody(tokenResponse));
     server.enqueue(new MockResponse().setResponseCode({{httpStatus}}).setBody(responseJsonString));
 
 

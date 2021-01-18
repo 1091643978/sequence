@@ -195,7 +195,7 @@ public class ExampleXlsTest {
         Writer writer = new OutputStreamWriter(System.out);
         MustacheFactory mf = new DefaultMustacheFactory();
 //        Mustache mustache = mf.compile("error_unit.mustache");
-        Mustache mustache = mf.compile("msg08.mustache");
+        Mustache mustache = mf.compile("msg08_2.mustache");
         mustache.execute(writer, scopes);
         writer.flush();
 

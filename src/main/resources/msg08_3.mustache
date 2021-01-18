@@ -1,4 +1,7 @@
 {{#messages}}
+
+
+
     @Test
     public void thirdApi{{httpStatus}}{{code}}() throws IOException, ServletException {
 
@@ -47,7 +50,7 @@
     "        }\n" +
     "    }\n" +
     "}";
-   server.enqueue(new MockResponse().setResponseCode(200).setBody(tokenResponse));
+    server.enqueue(new MockResponse().setResponseCode(200).setBody(tokenResponse));
     server.enqueue(new MockResponse().setResponseCode({{httpStatus}}).setBody(responseJsonString));
 
 
