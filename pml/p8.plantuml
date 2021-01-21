@@ -31,6 +31,10 @@ title 解约时后台帮助客户解除绑定
 
 m1 -> m2:  车辆解约登录解除IF  <font color=red>DELETE  <font color=green>/terminationDeregister/{vin}
 
+m2 -> m2: 校验vin号
+
+alt <font color=green>vin有效
+
 
 
 m2 -> o1 : PID-T-IF0203 GET  https://{CENTER_HOSTNAME}/pid/vehicleregistrations/{vin}
@@ -38,6 +42,24 @@ m2 -> o1 : PID-T-IF0203 GET  https://{CENTER_HOSTNAME}/pid/vehicleregistrations/
 
 alt  GetRegistrationStatus  <font color=green>success
     o1 --> m2 : HTTP Status:200
+
+  group   （メモリIDが0件の場合）
+    note over m2
+        ※HTTP Status:200の場合
+        （メモリIDが0件の場合）
+        {
+            "data": {
+                "vehicleRegistrationStatus": {
+                    "vin": "JA0000000000",
+                    "registeredProfiles": []
+                }
+            }
+        }
+    endnote
+    m2 -->m1: {"result":"000"}
+end
+
+
     note over m2
    ※HTTP Status:200の場合
     （メモリIDが1件登録されている場合）
@@ -116,18 +138,6 @@ alt  GetRegistrationStatus  <font color=green>success
     }
     endnote
 
-    note over m2
-        ※HTTP Status:200の場合
-        （メモリIDが0件の場合）
-        {
-            "data": {
-                "vehicleRegistrationStatus": {
-                    "vin": "JA0000000000",
-                    "registeredProfiles": []
-                }
-            }
-        }
-    endnote
 
 
 
@@ -215,75 +225,8 @@ alt  GetRegistrationStatus  <font color=green>success
 
                     end
 
-                    m2 --> m1 : HTTP Status:200
-                   group 当有一个内存ID时 メモリIDが1件の場合
+                    m2 --> m1 : {"result":"000"}
 
-
-                        note over m1
-                        {
-                            "code":"A01108000",
-                            "description":"ok",
-                            "data": {
-                                    "vehicleRegistrationStatus": {
-                                        "vin": "JA0000000000",
-                                        "registeredProfiles": [
-                                            {
-                                                "userId": "XXXXXXXXXX",
-                                                "role": 0,
-                                                "memoryId": 1,
-                                                "profileName": "NAME_1"
-                                            }
-                                        ]
-                                    }
-                                }
-                        }
-                        endnote
-                    end
-                    group 当有2个内存ID（1,3）时  メモリIDが2件の場合(1,3)
-
-
-                        note over m1
-                        {
-                            "code":"A01108000",
-                            "description":"ok",
-                            "data": {
-                                    "vehicleRegistrationStatus": {
-                                        "vin": "JA0000000000",
-                                        "registeredProfiles": [
-                                            {
-                                                "userId": "XXXXXXXXXX",
-                                                "role": 1,
-                                                "memoryId": 1,
-                                                "profileName": "NAME_1"
-                                            },
-                                            {
-                                                "userId": "ZZZZZZZZZZ",
-                                                "role": 1,
-                                                "memoryId": 3,
-                                                "profileName": "NAME_3"
-                                            }
-                                        ]
-                                    }
-                                }
-                        }
-                        endnote
-                    end
-                    group  当删除0个内存ID或PRIMARY时  メモリIDが0件またはPRIMARYが削除された場合
-
-
-                        note over m1
-                        {
-                            "code":"A01108000",
-                            "description":"ok",
-                            "data": {
-                                    "vehicleRegistrationStatus": {
-                                        "vin": "JA0000000000",
-                                        "registeredProfiles": []
-                                    }
-                                }
-                        }
-                        endnote
-                    end
 
                 '==============================
                 '2.fail..deregister vehicle
@@ -292,47 +235,47 @@ alt  GetRegistrationStatus  <font color=green>success
 
                     group call third api return 403
                         o1 -->m2:   HTTP Status Code:403
-                        m2 -->m1:  {"code":"A01108999","description":"call third api exception:403"}\nHTTP Status Code:500
+                        m2 -->m1: {"result":"054"}
                     end
 
                     group call third api return 500
                         o1 -->m2:   {\n  "errors": { \n  "code": " E01001", \n "description": "DB access error occurred." \n  } \n }  \nHTTP Status Code:500
-                        m2 -->m1:  {"code":"A01108999","description":"call third api exception:E01001"}\nHTTP Status Code:500
+                        m2 -->m1: {"result":"032"}
                     end
 
                     group call third api return 409
                         o1 -->m2:   {\n  "errors": { \n  "code": " W01002", \n "description": "DB update conflict occurred. " \n  } \n }  \nHTTP Status Code:409
-                        m2 -->m1:  {"code":"A01108999","description":"call third api exception:W01002"}\nHTTP Status Code:500
+                        m2 -->m1:  {"result":"051"}
                     end
 
                     group call third api return 404
                         o1 -->m2:   {\n  "errors": { \n  "code": " W01003", \n "description": "Specified item does not exist. [Item&#61;{0}, detail&#61;{1}]" \n  } \n }  \nHTTP Status Code:404
-                        m2 -->m1:  {"code":"A01108999","description":"call third api exception:W01003"}\nHTTP Status Code:500
+                        m2 -->m1:  {"result":"033"}
                     end
 
                     group call third api return 404
                         o1 -->m2:   {\n  "errors": { \n  "code": " W01005", \n "description": "Specified data does not exist.  [detail&#61;{0}]" \n  } \n }  \nHTTP Status Code:404
-                        m2 -->m1:  {"code":"A01108999","description":"call third api exception:W01005"}\nHTTP Status Code:500
+                        m2 -->m1: {"result":"052"}
                     end
 
                     group call third api return 500
                         o1 -->m2:   {\n  "errors": { \n  "code": " E91000", \n "description": "Internal server error occurred." \n  } \n }  \nHTTP Status Code:500
-                        m2 -->m1:  {"code":"A01108999","description":"call third api exception:E91000"}\nHTTP Status Code:500
+                        m2 -->m1:  {"result":"034"}
                     end
 
                     group call third api return 400
                         o1 -->m2:   {\n  "errors": { \n  "code": " W92001", \n "description": "Input parameter error. (Invalid parameter type.[Field&#61;{0}])" \n  } \n }  \nHTTP Status Code:400
-                        m2 -->m1:  {"code":"A01108999","description":"call third api exception:W92001"}\nHTTP Status Code:500
+                        m2 -->m1:  {"result":"035"}
                     end
 
                     group call third api return 400
                         o1 -->m2:   {\n  "errors": { \n  "code": " W92002", \n "description": "Input parameter error. ({0} is required.)" \n  } \n }  \nHTTP Status Code:400
-                        m2 -->m1:  {"code":"A01108999","description":"call third api exception:W92002"}\nHTTP Status Code:500
+                        m2 -->m1:  {"result":"053"}
                     end
 
                     group call third api return 400
                         o1 -->m2:   {\n  "errors": { \n  "code": " W92003", \n "description": "Input parameter error. (parameter size error. [Field&#61;{0}])" \n  } \n }  \nHTTP Status Code:400
-                        m2 -->m1:  {"code":"A01108999","description":"call third api exception:W92003"}\nHTTP Status Code:500
+                        m2 -->m1:  {"result":"036"}
                     end
 
                 end
@@ -355,68 +298,74 @@ else GetRegistrationStatsu  <font color=red>failure
 
     group call third api return 403
          o1 -->m2:   {\n  "errors": { \n  "code": " -", \n "description": "Forbidden" \n  } \n }  \nHTTP Status Code:403
-         m2 -->m1:  {"code":"A01103999","description":"call third api exception:-"}\nHTTP Status Code:500
+         m2 -->m1:  {"result":"054"}
     end
 
 
     group call third api return 500
          o1 -->m2:   {\n  "errors": { \n  "code": " E01001", \n "description": "DB access error occurred." \n  } \n }  \nHTTP Status Code:500
-         m2 -->m1:  {"code":"A01103999","description":"call third api exception:E01001"}\nHTTP Status Code:500
+         m2 -->m1:    {"result":"032"}
     end
 
 
     group call third api return 404
          o1 -->m2:   {\n  "errors": { \n  "code": " W01003", \n "description": "Specified item does not exist. [Item&#61;{0}, detail&#61;{1}]" \n  } \n }  \nHTTP Status Code:404
-         m2 -->m1:  {"code":"A01103999","description":"call third api exception:W01003"}\nHTTP Status Code:500
+         m2 -->m1:  {"result":"033"}
     end
 
 
     group call third api return 500
          o1 -->m2:   {\n  "errors": { \n  "code": " E91000", \n "description": "Internal server error occurred." \n  } \n }  \nHTTP Status Code:500
-         m2 -->m1:  {"code":"A01103999","description":"call third api exception:E91000"}\nHTTP Status Code:500
+         m2 -->m1:  {"result":"034"}
     end
 
 
     group call third api return 400
          o1 -->m2:   {\n  "errors": { \n  "code": " W92001", \n "description": "Input parameter error. (Invalid parameter type.[Field&#61;{0}])" \n  } \n }  \nHTTP Status Code:400
-         m2 -->m1:  {"code":"A01103999","description":"call third api exception:W92001"}\nHTTP Status Code:500
+         m2 -->m1:   {"result":"035"}
     end
 
 
     group call third api return 400
          o1 -->m2:   {\n  "errors": { \n  "code": " W92003", \n "description": "Input parameter error. (parameter size error. [Field&#61;{0}])" \n  } \n }  \nHTTP Status Code:400
-         m2 -->m1:  {"code":"A01103999","description":"call third api exception:W92003"}\nHTTP Status Code:500
+         m2 -->m1:   {"result":"036"}
     end
 
 
     group call third api return 503
          o1 -->m2:   {\n  "errors": { \n  "code": " E12004", \n "description": "MDM service unavailable (access error)." \n  } \n }  \nHTTP Status Code:503
-         m2 -->m1:  {"code":"A01103999","description":"call third api exception:E12004"}\nHTTP Status Code:500
+         m2 -->m1:   {"result":"037"}
     end
 
 
     group call third api return 503
          o1 -->m2:   {\n  "errors": { \n  "code": " E12005", \n "description": "MDM service unavailable (access timeout error)." \n  } \n }  \nHTTP Status Code:503
-         m2 -->m1:  {"code":"A01103999","description":"call third api exception:E12005"}\nHTTP Status Code:500
+         m2 -->m1:   {"result":"038"}
     end
 
 
     group call third api return 503
          o1 -->m2:   {\n  "errors": { \n  "code": " E12006", \n "description": "MDM service unavailable (error response was received)." \n  } \n }  \nHTTP Status Code:503
-         m2 -->m1:  {"code":"A01103999","description":"call third api exception:E12006"}\nHTTP Status Code:500
+         m2 -->m1:   {"result":"039"}
     end
 
 
     group call third api return 503
          o1 -->m2:   {\n  "errors": { \n  "code": " E12009", \n "description": "MDM service unavailable (Illegal PersonalVehicleFlag)." \n  } \n }  \nHTTP Status Code:503
-         m2 -->m1:  {"code":"A01103999","description":"call third api exception:E12009"}\nHTTP Status Code:500
+         m2 -->m1:   {"result":"040"}
     end
 
 
     group call third api return 400
          o1 -->m2:   {\n  "errors": { \n  "code": " E12011", \n "description": "Client error received from MDM service." \n  } \n }  \nHTTP Status Code:400
-         m2 -->m1:  {"code":"A01103999","description":"call third api exception:E12011"}\nHTTP Status Code:500
+         m2 -->m1:   {"result":"041"}
     end
+end
+
+
+
+else <font color=red>vin无效
+m2 --> m1 :  {"result":"021"}
 end
 
 
@@ -424,12 +373,6 @@ end
 
 
 
-
-
-
-legend
- A01108
-endlegend
 
 
 @enduml
