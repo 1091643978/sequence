@@ -1,0 +1,47 @@
+@startuml
+
+autonumber
+
+participant "前端" as fe
+
+participant "后端" as be
+
+database redis
+
+
+===get token==
+fe -> be : login
+
+be -> be : access_token :xxxxxxxxxx
+be -> redis:  xxxxxxxxxx 5s
+be --> fe: xxxxxxxxxx
+note over fe
+  {
+  access_token:xxxxxxxxxx,
+  user_token:MUlZvYhEckLuvnCq
+  }
+endnote
+
+===click请求==
+fe -> be : click请求: xxxxxxxxxx
+be -> be :check token
+be -> redis : get token
+be -> be : compare
+
+alt token valid
+    be -x  redis :删除xxxxxxxxxx
+    be -> be : do sth
+    be --> fe : 更新 access_token:yyyyyyyyy
+else token invalid
+    be -> fe : token invalid
+end
+
+
+
+===click请求==
+fe -> be : click请求:  新 access_token:yyyyyyyyy
+
+...
+
+
+@enduml
