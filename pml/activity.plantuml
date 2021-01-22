@@ -1,0 +1,50 @@
+@startuml
+start
+
+fork
+  :"Upload dataset";
+fork again
+  :"Open existing dataset";
+end fork
+
+fork
+  :"Data cleaning and preparation";
+  : "Data quality report generation";
+fork again
+  :"Modelling";
+  : "Validation";
+fork again
+  :"Segmentaion";
+  :"Validation";
+fork again
+  :"EDA";
+  fork
+    :"Univariate analysis";
+  fork again
+    :"Bivariate analysis";
+  end fork
+end fork
+
+:"Report generation";
+:"Export reports";
+
+stop
+@enduml
+
+
+@startuml
+|Beatnik|
+start
+    :createPlaceRequest;
+    :placeRequest\nprocceed to BM;]
+|#AntiqueWhite|Businessman|
+    :makeDecision;
+    if(approved) then
+        |Beatnik|
+            :review();
+            :reviewed;]
+    else
+        |Beatnik|
+            :reviewed;]
+stop
+@enduml
